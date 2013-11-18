@@ -1,0 +1,22 @@
+<?php
+
+  if (!defined('WP_UNINSTALL_PLUGIN')) {
+    header('Status: 403 Forbidden');
+    header('HTTP/1.1 403 Forbidden');
+    exit();
+  }
+
+  if ( !is_user_logged_in() )
+    wp_die( 'You must be logged in to run this script.' );
+
+  if ( !current_user_can( 'install_plugins' ) )
+    wp_die( 'You do not have permission to run this script.' );
+
+  global $wpdb;
+
+  $table = $wpdb->prefix . "persistent_call_tracking_phones";
+  $sql = "DROP TABLE " . $table . ";";
+  $wpdb->query($sql);
+
+  delete_option('persistent_call_tracking_cookie');
+  delete_option('persistent_call_tracking_default');
