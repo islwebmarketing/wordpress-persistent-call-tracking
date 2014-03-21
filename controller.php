@@ -19,9 +19,8 @@ class persistent_call_tracking_tw_controller {
 		}
 	}
 
-	function trackable_number( $atts ) {
+	function trackable_number( $atts, $content, $tag ) {
 		global $wpdb;
-		$cookie_expiry        = (float) get_option( 'persistent_call_tracking_cookie' );
 		$phn_no               = get_option( 'persistent_call_tracking_default' );
 		$getSrc               = (int) $_GET['src'];
 		$cookie_trackable_src = (int) $_COOKIE["trackable_src"];
@@ -29,14 +28,14 @@ class persistent_call_tracking_tw_controller {
 		if ( $getSrc > 0 && $getSrc != $cookie_trackable_src ) {
 			$sql  = "SELECT * FROM " . PHONE_TABLE . " where p_id = " . $getSrc . " and status = 1";
 			$data = $wpdb->get_row( $sql, ARRAY_A );
-			if ( $data['p_id'] > 0 ) {
+			if ( $data['p_id'] > 0 && $data['shortcode'] == $tag ) {
 				return $data['phn_no'];
 			}
 		}
 		if ( $cookie_trackable_src > 0 ) {
 			$sql  = "SELECT * FROM " . PHONE_TABLE . " where p_id = " . $cookie_trackable_src . " and status = 1";
 			$data = $wpdb->get_row( $sql, ARRAY_A );
-			if ( $data['p_id'] > 0 ) {
+			if ( $data['p_id'] > 0 && $data['shortcode'] == $tag ) {
 				return $data['phn_no'];
 			}
 		}
@@ -115,7 +114,6 @@ class persistent_call_tracking_tw_controller {
 			$chkNoExists = $wpdb->query( "SELECT p_id FROM " . PHONE_TABLE . " where phn_no = '" . trim( $_POST['phn_no'] ) . "' and p_id <> '" . trim( $_POST['p_id'] ) . "'" );
 
 			if ( trim( $_POST['name'] ) == '' || trim( $_POST['phn_no'] ) == '' ) {
-				$tw_no            = '';
 				$data['wp_error'] = "Please enter value for Name and Phone Number.";
 			} elseif ( $chkNoExists > 0 ) {
 				$data['wp_error'] = trim( $_POST['phn_no'] ) . " Phone Number already exists.";
@@ -128,12 +126,14 @@ class persistent_call_tracking_tw_controller {
 
 				$name   = $_POST['name'];
 				$phn_no = $_POST['phn_no'];
+				$shortcode = $_POST['shortcode'];
 
 				$table = PHONE_TABLE;
 				// add value to new record array
 				$new_record = array(
 					'name'   => $name,
 					'phn_no' => $phn_no,
+					'shortcode' => $shortcode,
 					'status' => 1
 				);
 				//save the post

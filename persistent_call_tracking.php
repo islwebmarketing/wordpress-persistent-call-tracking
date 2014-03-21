@@ -3,7 +3,7 @@
 Plugin Name: Persistent Call Tracking
 Plugin URI: http://www.isl.ca/en/home/plugins/wordpress-call-tracking.aspx
 Description: This plugin is used to persist phone numbers based on a source value in the query string.
-Version: 1.0
+Version: 1.1.0
 Author: ISL
 Author URI: http://www.isl.ca
 License: GPLv3
@@ -21,7 +21,6 @@ add_action( 'init', 'persistent_call_tracking_thecookie', 1 );
 function persistent_call_tracking_thecookie() {
 	global $wpdb;
 	$cookie_expiry        = (float) get_option( 'persistent_call_tracking_cookie' );
-	$phn_no               = get_option( 'persistent_call_tracking_default' );
 	$getSrc               = (int) $_GET['src'];
 	$cookie_trackable_src = (int) $_COOKIE["trackable_src"];
 
@@ -49,4 +48,16 @@ function tw_settings() {
 	$tw_cont_obj->settings();
 }
 
-add_shortcode( 'trackable_number', array( 'persistent_call_tracking_tw_controller', 'trackable_number' ) );
+function persistent_call_tracking_add_shortcodes() {
+	global $wpdb;
+
+	$sql  = "SELECT DISTINCT shortcode FROM " . PHONE_TABLE . " where status = 1";
+
+	$data = $wpdb->get_results( $sql );
+
+	foreach ($data as $result) {
+		add_shortcode( $result->shortcode, array( 'persistent_call_tracking_tw_controller', 'trackable_number' ) );
+	}
+}
+
+persistent_call_tracking_add_shortcodes();

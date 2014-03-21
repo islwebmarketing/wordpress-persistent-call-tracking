@@ -6,13 +6,21 @@
 			return false;
 		}
 		else if (frm.phn_no.value == '') {
-			alert('Please enter Phone Number.');
+			alert('Please enter a Phone Number.');
+			frm.phn_no.focus();
+			return false;
+		}
+		else if (frm.shortcode.value == '') {
+			alert('Please enter a Shortcode.');
 			frm.phn_no.focus();
 			return false;
 		}
 	}
 	function copyToClipboard(text) {
 		window.prompt("Press Ctrl+C to copy", text);
+	}
+	function stripCharacters(element) {
+		element.value = element.value.replace(/\W/g, '');
 	}
 </script>
 <div id="form_container" class="wrap">
@@ -46,21 +54,37 @@
 				           size="60" value="<?php echo trim( $data['name'] ) ?>"/></td>
 			</tr>
 			<tr valign="top">
-				<th scope="row"><label class="description" for="name">Phone Number: </label></th>
+				<th scope="row"><label class="description" for="phn_no">Phone Number: </label></th>
 				<td><input id="phn_no" name="phn_no" class="element text medium regular-text" type="text"
 				           maxlength="200" size="60" value="<?php echo trim( $data['phn_no'] ) ?>"/></td>
 			</tr>
 			<?php if ( $data['p_id'] > 0 ) {
 				$twillo_url = '?src=' . $data['p_id']?>
 				<tr valign="top">
-					<th scope="row"><label class="description" for="twillo_url">Parameter: </label></th>
+					<th scope="row"><label class="description">Shortcode: </label></th>
+					<td><?php echo "[{$data['shortcode']}]" ?> <a href="#" onclick="copyToClipboard('<?php echo "[{$data['shortcode']}]"; ?>');">
+							<img title="Copy" style="vertical-align:top;" alt="Copy" src="<?php echo MY_BASE_URL ?>images/copy.png"/>
+						</a>
+					</td>
+				</tr>
+				<tr valign="top">
+					<th scope="row"><label class="description">Parameter: </label></th>
 					<td><?php echo $twillo_url ?> <a href="#" onclick="copyToClipboard('<?php echo $twillo_url ?>');">
 							<img title="Copy" style="vertical-align:top;" alt="Copy" src="<?php echo MY_BASE_URL ?>images/copy.png"/>
 						</a>
 					</td>
 				</tr>
 			<?php
-			}?></tbody>
+			} else { ?>
+				<tr valign="top">
+					<th scope="row"><label class="description" for="shortcode">Shortcode: </label></th>
+					<td><input id="shortcode" name="shortcode" class="element text medium regular-text" type="text"
+					           maxlength="200" size="60" value="trackable_number" onblur="stripCharacters(this)"/>
+						<br />Shortcode names should be all lowercase and use all letters, but numbers and underscores
+						should work fine too.</td>
+				</tr>
+				<tr><td></td><td></td></tr>
+			<?php } ?></tbody>
 		</table>
 		<input type="hidden" name="p_id" id="p_id" value="<?php echo $data['p_id'] ?>"/>
 

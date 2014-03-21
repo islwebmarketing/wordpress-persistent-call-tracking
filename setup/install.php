@@ -3,19 +3,19 @@
 // install table and other required settings for plugin
 class tw_install {
 	function install() {
-		$sql = "CREATE TABLE " . PHONE_TABLE . " (
+		global $wpdb;
+
+		$sql = "CREATE TABLE IF NOT EXISTS " . PHONE_TABLE . " (
 				p_id INT NOT NULL AUTO_INCREMENT,
 				phn_no VARCHAR(255) NOT NULL,
-				shortcode VARCHAR(255) DEFAULT 'trackable_number',
+				shortcode VARCHAR(255) DEFAULT 'trackable_number' NOT NULL,
 				name VARCHAR(255) NOT NULL,
 				status TINYINT NOT NULL,
 				created DATETIME NOT NULL,
 				UNIQUE KEY p_id (p_id)
 			);";
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-
-		dbDelta( $sql );
+		$wpdb->query( $sql );
 
 		add_option( 'persistent_call_tracking_cookie', 90 );
 		add_option( 'persistent_call_tracking_default', 0 );

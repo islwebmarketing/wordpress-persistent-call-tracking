@@ -45,6 +45,14 @@ class Phones_Table extends WP_List_Table {
 		return '?src=' . $item['p_id'] . ' &nbsp; <a href="#" onclick="copyToClipboard(\'?src=' . $item['p_id'] . '\');"><img title="Copy" style="vertical-align:top;" alt="Copy" src="' . MY_BASE_URL . 'images/copy.png" /></a>';
 	}
 
+	function column_shortcode( $item ) {
+		$base_url = MY_BASE_URL;
+
+		return "[{$item['shortcode']}] &nbsp; <a href='#'
+		onclick=\"copyToClipboard('[{$item['shortcode']}]');\"><img title=\"Copy\"
+		style=\"vertical-align:top;\" alt=\"Copy\" src=\"{$base_url}images/copy.png\"/></a>";
+	}
+
 	/** ************************************************************************
 	 * Optional. If you need to include bulk actions in your list table, this is
 	 * the place to define them. Bulk actions are an associative array in the format
@@ -142,7 +150,8 @@ class Phones_Table extends WP_List_Table {
 			'cb'     => '<input type="checkbox" />', //Render a checkbox instead of text
 			'name'   => 'Name/Source',
 			'phn_no' => 'Phone Number',
-			'src'    => 'Parameter'
+			'src'    => 'Parameter',
+			'shortcode'    => 'Shortcode'
 		);
 
 		return $columns;
