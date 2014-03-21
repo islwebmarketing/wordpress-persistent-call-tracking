@@ -6,7 +6,7 @@ if (!class_exists('WP_List_Table')) {
 }
 
 global $wpdb;
-define('MY_BASE_URL', plugins_url('persistent_call_tracking') . '/');
+define('MY_BASE_URL', plugins_url('wordpress-persistent-call-tracking') . '/');
 define('PHONE_TABLE', $wpdb->prefix . "persistent_call_tracking_phones");
 
 require_once(ABSPATH . 'wp-includes/wp-db.php');
