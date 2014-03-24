@@ -75,7 +75,7 @@ class Phones_Table extends WP_List_Table {
 			);
 		} else {
 			$actions = array(
-				'inactivate' => 'Inactivate'
+				'inactivate' => 'Deactivate'
 			);
 		}
 
