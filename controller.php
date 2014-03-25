@@ -1,8 +1,8 @@
 <?php
 
-class persistent_call_tracking_tw_controller {
+class persistent_call_tracking_controller {
 	function view( $view = '', $data = array() ) {
-		$viewPath = MY_BASE . 'views/' . $view . '.php';
+		$viewPath = PLUGIN_BASE . 'views/' . $view . '.php';
 		if ( file_exists( $viewPath ) ) {
 			include_once( $viewPath );
 		} else {
@@ -21,24 +21,28 @@ class persistent_call_tracking_tw_controller {
 
 	function trackable_number( $atts, $content, $tag ) {
 		global $wpdb;
-		$phn_no               = get_option( 'persistent_call_tracking_default' );
 		$getSrc               = (int) $_GET['src'];
 		$cookie_trackable_src = (int) $_COOKIE["trackable_src"];
 
+        // TODO: Get the shortcode, save the default value.
+        $phn_no = "";
+
 		if ( $getSrc > 0 && $getSrc != $cookie_trackable_src ) {
-			$sql  = "SELECT * FROM " . PHONE_TABLE . " where p_id = " . $getSrc . " and status = 1";
+			$sql  = "SELECT * FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " where p_id = " . $getSrc . " and status = 1";
 			$data = $wpdb->get_row( $sql, ARRAY_A );
 			if ( $data['p_id'] > 0 && $data['shortcode'] == $tag ) {
 				return $data['phn_no'];
 			}
 		}
 		if ( $cookie_trackable_src > 0 ) {
-			$sql  = "SELECT * FROM " . PHONE_TABLE . " where p_id = " . $cookie_trackable_src . " and status = 1";
+			$sql  = "SELECT * FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " where p_id = " . $cookie_trackable_src . " and status = 1";
 			$data = $wpdb->get_row( $sql, ARRAY_A );
 			if ( $data['p_id'] > 0 && $data['shortcode'] == $tag ) {
 				return $data['phn_no'];
 			}
 		}
+
+
 
 		return $phn_no;
 	}
@@ -50,22 +54,18 @@ class persistent_call_tracking_tw_controller {
 
 		$data                  = array();
 		$data['cookie_expiry'] = get_option( 'persistent_call_tracking_cookie' );
-		$data['phn_no']        = get_option( 'persistent_call_tracking_default' );
 
-		if ( $_POST['tw_submit'] == 'Save Changes' ) {
+		if ( $_POST['persistent_call_tracking_submit'] == 'Save Changes' ) {
 			$persistent_call_tracking_cookie  = (float) trim( $_POST['cookie_expiry'] );
-			$persistent_call_tracking_default = trim( $_POST['phn_no'] );
 			$data['cookie_expiry']            = $persistent_call_tracking_cookie;
-			$data['phn_no']                   = $persistent_call_tracking_default;
 
-			if ( trim( $_POST['cookie_expiry'] ) == '' || trim( $_POST['phn_no'] ) == '' ) {
-				$data['wp_error'] = 'Default Number and Cookie Expiry are required and must not left empty.';
+			if ( trim( $_POST['cookie_expiry'] ) == '' ) {
+				$data['wp_error'] = 'Cookie Expiry is required and must not be left empty.';
 			} elseif ( ! is_numeric( trim( $_POST['cookie_expiry'] ) ) || trim( $_POST['cookie_expiry'] ) < 0 || trim( $_POST['cookie_expiry'] ) > 730 ) {
 				$data['wp_error'] = 'Cookie Expiry should be between 1 to 730 Days';
 			} else {
-				$data['wp_msg'] = 'Call Tracker Settings Update. From now on default phone number is ' . $persistent_call_tracking_default . ' and all new cookies created will expire after ' . $persistent_call_tracking_cookie . ' days(s).';
+				$data['wp_msg'] = 'Call Tracker Settings Update. From now on all new cookies created will expire after ' . $persistent_call_tracking_cookie . ' days(s).';
 				update_option( 'persistent_call_tracking_cookie', $persistent_call_tracking_cookie );
-				update_option( 'persistent_call_tracking_default', $persistent_call_tracking_default );
 			}
 		}
 		$this->view( 'settings', $data );
@@ -78,7 +78,7 @@ class persistent_call_tracking_tw_controller {
 			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
 		}
 
-		require_once( MY_BASE . 'helper/phonesTable.php' );
+		require_once( PLUGIN_BASE . 'helper/phonesTable.php' );
 
 		//Create an instance of our package class...
 		$phonesTable = new Phones_Table();
@@ -111,7 +111,7 @@ class persistent_call_tracking_tw_controller {
 		if ( 'POST' == $_SERVER['REQUEST_METHOD'] && ! empty( $_POST['action'] ) && $_POST['action'] == "new_record" ) {
 			$data = $_POST;
 
-			$chkNoExists = $wpdb->query( "SELECT p_id FROM " . PHONE_TABLE . " where phn_no = '" . trim( $_POST['phn_no'] ) . "' and p_id <> '" . trim( $_POST['p_id'] ) . "'" );
+			$chkNoExists = $wpdb->query( "SELECT p_id FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " where phn_no = '" . trim( $_POST['phn_no'] ) . "' and p_id <> '" . trim( $_POST['p_id'] ) . "'" );
 
 			if ( trim( $_POST['name'] ) == '' || trim( $_POST['phn_no'] ) == '' ) {
 				$data['wp_error'] = "Please enter value for Name and Phone Number.";
@@ -128,7 +128,7 @@ class persistent_call_tracking_tw_controller {
 				$phn_no = $_POST['phn_no'];
 				$shortcode = $_POST['shortcode'];
 
-				$table = PHONE_TABLE;
+				$table = PERSISTENT_CALL_TRACKING_TABLE_PHONES;
 				// add value to new record array
 				$new_record = array(
 					'name'   => $name,
@@ -152,7 +152,7 @@ class persistent_call_tracking_tw_controller {
 			}
 		}
 		if ( $p_id > 0 ) {
-			$sql              = "SELECT * FROM " . PHONE_TABLE . " where p_id = " . $p_id;
+			$sql              = "SELECT * FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " where p_id = " . $p_id;
 			$tmpMsg           = $data['wp_msg'];
 			$tmpError         = $data['wp_error'];
 			$data             = $wpdb->get_row( $sql, ARRAY_A );

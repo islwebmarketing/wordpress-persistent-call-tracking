@@ -31,7 +31,7 @@ class Phones_Table extends WP_List_Table {
 		//Return the title contents
 		return sprintf( '%1$s %2$s',
 			/*$1%s*/
-			sprintf( '<a href="?page=tw-calls&p_id=%s">%s</a>', $item['p_id'], $item['name'] ),
+			sprintf( '<a href="?page=persistent-call-tracking-calls&p_id=%s">%s</a>', $item['p_id'], $item['name'] ),
 			/*$3%s*/
 			$this->row_actions( $actions )
 		);
@@ -42,11 +42,11 @@ class Phones_Table extends WP_List_Table {
 	}
 
 	function column_src( $item ) {
-		return '?src=' . $item['p_id'] . ' &nbsp; <a href="#" onclick="copyToClipboard(\'?src=' . $item['p_id'] . '\');"><img title="Copy" style="vertical-align:top;" alt="Copy" src="' . MY_BASE_URL . 'images/copy.png" /></a>';
+		return '?src=' . $item['p_id'] . ' &nbsp; <a href="#" onclick="copyToClipboard(\'?src=' . $item['p_id'] . '\');"><img title="Copy" style="vertical-align:top;" alt="Copy" src="' . PLUGIN_BASE_URL . 'images/copy.png" /></a>';
 	}
 
 	function column_shortcode( $item ) {
-		$base_url = MY_BASE_URL;
+		$base_url = PLUGIN_BASE_URL;
 
 		return "[{$item['shortcode']}] &nbsp; <a href='#'
 		onclick=\"copyToClipboard('[{$item['shortcode']}]');\"><img title=\"Copy\"
@@ -102,11 +102,11 @@ class Phones_Table extends WP_List_Table {
 		if ( trim( $phones ) != '' ) {
 			$phones = '(' . $phones . ')';
 			if ( 'delete' == $currentAction ) {
-				$wpdb->query( "DELETE FROM " . PHONE_TABLE . " WHERE p_id in " . $phones );
+				$wpdb->query( "DELETE FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " WHERE p_id in " . $phones );
 			} elseif ( 'inactivate' == $currentAction ) {
-				$wpdb->query( "update " . PHONE_TABLE . " set status = 0 WHERE p_id in " . $phones );
+				$wpdb->query( "update " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " set status = 0 WHERE p_id in " . $phones );
 			} elseif ( 'activate' == $currentAction ) {
-				$wpdb->query( "update " . PHONE_TABLE . " set status = 1 WHERE p_id in " . $phones );
+				$wpdb->query( "update " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " set status = 1 WHERE p_id in " . $phones );
 			}
 		}
 	}
@@ -159,7 +159,7 @@ class Phones_Table extends WP_List_Table {
 
 	function get_views() {
 		global $wpdb;
-		$query    = "SELECT a.* FROM " . PHONE_TABLE . " as a";
+		$query    = "SELECT a.* FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " as a";
 		$all      = $wpdb->query( $query );
 		$active   = $wpdb->query( $query . ' where status = 1' );
 		$inactive = $wpdb->query( $query . ' where status = 0' );
@@ -167,9 +167,9 @@ class Phones_Table extends WP_List_Table {
 		${$_GET['post_status'] . 'cnt'} = ' class="current"';
 
 		$toRet = array(
-			'all'      => '<a href="?page=tw-phone-tracker&post_status=all"' . $allcnt . '>All <span class="count">(' . $all . ')</span></a>',
-			'active'   => '<a href="?page=tw-phone-tracker"' . $cnt . '>Active <span class="count">(' . $active . ')</span></a>',
-			'inactive' => '<a href="?page=tw-phone-tracker&post_status=inactive"' . $inactivecnt . '>Inactive <span class="count">(' . $inactive . ')</span></a>'
+			'all'      => '<a href="?page=persistent-call-tracking&post_status=all"' . $allcnt . '>All <span class="count">(' . $all . ')</span></a>',
+			'active'   => '<a href="?page=persistent-call-tracking"' . $cnt . '>Active <span class="count">(' . $active . ')</span></a>',
+			'inactive' => '<a href="?page=persistent-call-tracking&post_status=inactive"' . $inactivecnt . '>Inactive <span class="count">(' . $inactive . ')</span></a>'
 		);
 
 		return $toRet;
@@ -216,7 +216,7 @@ class Phones_Table extends WP_List_Table {
 		$screen = get_current_screen();
 
 		/* -- Preparing your query -- */
-		$query = "SELECT * FROM " . PHONE_TABLE;
+		$query = "SELECT * FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES;
 		if ( $_GET['post_status'] == 'inactive' ) {
 			$query .= ' where status = 0';
 		} elseif ( $_GET['post_status'] == 'all' ) {

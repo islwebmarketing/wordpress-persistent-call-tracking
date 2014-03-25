@@ -19,11 +19,6 @@
 	}
 
 	function checkVals(frm) {
-		if (frm.phn_no.value == '') {
-			alert('Please enter Default Number.');
-			frm.name.focus();
-			return false;
-		}
 		if (frm.cookie_expiry.value == '') {
 			alert('Please enter Cookie Expiry day(s).');
 			frm.cookie_expiry.focus();
@@ -41,7 +36,7 @@
 	<!-- ISL Header -->
 	<div style="margin-bottom: 15px; background-color: #ddd; border: 1px solid grey; padding: 5px;">
 		<a href="http://www.isl.ca" target="_blank">
-			<img src="<?php echo MY_BASE_URL ?>images/isl.png" alt="isl" style="padding-right: 10px;"/>
+			<img src="<?php echo PLUGIN_BASE_URL ?>images/isl.png" alt="isl" style="padding-right: 10px;"/>
 		</a>
 		Thanks for using our plugin! If you'd like to know more about us, check out <a href="http://www.isl.ca?utm_source=wordpress+plugin&utm_medium=plugin&utm_content=persistent+call+tracking&utm_campaign=wordpress+plugin" target="_blank">www.isl.ca</a>.
 	</div>
@@ -56,12 +51,6 @@
 		<table class="form-table">
 			<tbody>
 			<tr valign="top">
-				<th scope="row"><label class="description" for="name">Default Number: </label></th>
-				<td><input id="phn_no" name="phn_no" class="element text medium regular-text" type="text"
-				           maxlength="200" size="60" value="<?php echo trim( $data['phn_no'] ) ?>"/>
-					<p class="description">When no parameter is provided, this number will be displayed.</p></td>
-			</tr>
-			<tr valign="top">
 				<th scope="row"><label class="description" for="name">Cookie Expiry: </label></th>
 				<td><input id="cookie_expiry" name="cookie_expiry" onkeypress="return validate(event)"
 				           class="element text medium regular-text" maxlength="4" type="text" maxlength="200" size="60"
@@ -72,8 +61,8 @@
 			</tr>
 			</tbody>
 		</table>
-		<p class="submit"> &nbsp; <a class="button button-primary" href="?page=tw-phone-tracker">Cancel</a> &nbsp;
-			<input type="submit" name="tw_submit" id="saveForm" class="button button-primary" value="Save Changes">
+		<p class="submit"> &nbsp; <a class="button button-primary" href="?page=persistent-call-tracking">Cancel</a> &nbsp;
+			<input type="submit" name="persistent_call_tracking_submit" id="saveForm" class="button button-primary" value="Save Changes">
 		</p>
 	</form>
 </div>
