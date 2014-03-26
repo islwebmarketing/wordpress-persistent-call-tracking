@@ -16,8 +16,8 @@ define( 'PLUGIN_BASE', plugin_dir_path( __FILE__ ) );
 require_once( PLUGIN_BASE . 'config/config.php' );
 register_activation_hook( __FILE__, array( 'persistent_call_tracking_install', 'install' ) );
 
-add_action( 'init', 'persistent_call_tracking_thecookie', 1 );
 add_action( 'admin_init', 'persistent_call_tracking_deactivate_obsolete_plugin' );
+add_action( 'init', 'persistent_call_tracking_thecookie', 1 );
 
 function persistent_call_tracking_thecookie() {
 	global $wpdb;
@@ -40,12 +40,17 @@ function persistent_call_tracking_phone_numbers() {
 }
 function persistent_call_tracking_shortcodes() {
 	global $persistent_call_tracking_cont_obj;
-	$persistent_call_tracking_cont_obj->phone_numbers();
+	$persistent_call_tracking_cont_obj->shortcodes();
 }
 
 function persistent_call_tracking_add_phone() {
 	global $persistent_call_tracking_cont_obj;
 	$persistent_call_tracking_cont_obj->add_phone();
+}
+
+function persistent_call_tracking_add_shortcode() {
+	global $persistent_call_tracking_cont_obj;
+	$persistent_call_tracking_cont_obj->add_shortcode();
 }
 
 function persistent_call_tracking_settings() {
