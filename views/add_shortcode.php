@@ -61,7 +61,8 @@
 			<tr valign="top">
 				<th scope="row"><label class="description" for="shortcode">Shortcode: </label></th>
 				<td><input id="shortcode" name="shortcode" class="element text medium regular-text" type="text"
-				           maxlength="200" size="60" value="<?php echo trim( $data['shortcode'] ) ?>"/>
+				           maxlength="200" size="60" value="<?php echo trim( $data['shortcode'] ) ?>"
+                           onblur="stripCharacters(this)"/>
                   <br />Shortcode names should be all lowercase and use all letters, but numbers and underscores
                   should work fine too.</td>
 			</tr>
