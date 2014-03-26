@@ -67,7 +67,7 @@ function persistent_call_tracking_deactivate_obsolete_plugin() {
 function persistent_call_tracking_add_shortcodes() {
 	global $wpdb;
 
-	$sql  = "SELECT DISTINCT shortcode FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " where status = 1";
+	$sql  = "SELECT shortcode FROM " . PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES . " where status = 1";
 
 	$data = $wpdb->get_results( $sql );
 

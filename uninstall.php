@@ -20,6 +20,10 @@ $table = $wpdb->prefix . "persistent_call_tracking_phones";
 $sql   = "DROP TABLE " . $table . ";";
 $wpdb->query( $sql );
 
+$table = $wpdb->prefix . "persistent_call_tracking_shortcodes";
+$sql   = "DROP TABLE " . $table . ";";
+$wpdb->query( $sql );
+
 require_once( plugin_dir_path( __FILE__ ) . 'config/constants.php' );
 
 delete_option( 'persistent_call_tracking_cookie' );

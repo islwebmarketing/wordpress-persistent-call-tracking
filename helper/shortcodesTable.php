@@ -1,12 +1,12 @@
 <?php
 
-class Phones_Table extends WP_List_Table {
+class Shortcodes_Table extends WP_List_Table {
 	function __construct() {
 		global $status, $page;
 		//Set parent defaults
 		parent::__construct( array(
-			'singular' => 'phone', //singular name of the listed records
-			'plural'   => 'phones', //plural name of the listed records
+			'singular' => 'shortcode', //singular name of the listed records
+			'plural'   => 'shortcodes', //plural name of the listed records
 			'ajax'     => FALSE //does this table support ajax?
 		) );
 	}
@@ -18,42 +18,34 @@ class Phones_Table extends WP_List_Table {
 	function column_name( $item ) {
 		if ( $item['status'] == 1 ) {
 			$actions = array(
-				'edit'       => sprintf( '<a href="?page=add-phone-number&action=%s&p_id=%s">Edit</a>', 'edit', $item['p_id'] ),
-				'inactivate' => sprintf( '<a href="?page=%s&action=%s&phone=%s">Deactivate</a>', $_REQUEST['page'], 'inactivate', $item['p_id'] )
+				'edit'       => sprintf( '<a href="?page=add-shortcode&action=%s&s_id=%s">Edit</a>', 'edit', $item['s_id'] ),
+				'inactivate' => sprintf( '<a href="?page=%s&action=%s&shortcode=%s">Deactivate</a>', $_REQUEST['page'], 'inactivate', $item['s_id'] )
 			);
 		} else {
 			$actions = array(
-				'activate' => sprintf( '<a href="?page=%s&action=%s&phone=%s">Activate</a>', $_REQUEST['page'], 'activate', $item['p_id'] ),
-				'delete'   => sprintf( '<a href="?page=%s&action=%s&phone=%s">Delete</a>', $_REQUEST['page'], 'delete', $item['p_id'] ),
+				'activate' => sprintf( '<a href="?page=%s&action=%s&shortcode=%s">Activate</a>', $_REQUEST['page'], 'activate', $item['s_id'] ),
+				'delete'   => sprintf( '<a href="?page=%s&action=%s&shortcode=%s">Delete</a>', $_REQUEST['page'], 'delete', $item['s_id'] ),
 			);
 		}
 
 		//Return the title contents
 		return sprintf( '%1$s %2$s',
 			/*$1%s*/
-			sprintf( '<a href="?page=persistent-call-tracking-calls&p_id=%s">%s</a>', $item['p_id'], $item['name'] ),
+			sprintf( '<a href="?page=persistent-call-tracking-calls&s_id=%s">%s</a>', $item['s_id'], $item['name'] ),
 			/*$3%s*/
 			$this->row_actions( $actions )
 		);
 	}
 
-	function column_phn_no( $item ) {
-		return $item['phn_no'];
+	function column_default_number( $item ) {
+		return $item['default_number'];
 	}
 
-	function column_src( $item ) {
-		return '?src=' . $item['p_id'] . ' &nbsp; <a href="#" onclick="copyToClipboard(\'?src=' . $item['p_id'] . '\');"><img title="Copy" style="vertical-align:top;" alt="Copy" src="' . PLUGIN_BASE_URL . 'images/copy.png" /></a>';
-	}
-
-	function column_shortcode_name( $item ) {
+	function column_shortcode( $item ) {
 		$base_url = PLUGIN_BASE_URL;
 
-        if ( empty( $item['shortcode_name'] ) ) {
-            return "None assigned";
-        }
-
-		return "[{$item['shortcode_name']}] &nbsp; <a href='#'
-		onclick=\"copyToClipboard('[{$item['shortcode_name']}]');\"><img title=\"Copy\"
+		return "[{$item['shortcode']}] &nbsp; <a href='#'
+		onclick=\"copyToClipboard('[{$item['shortcode']}]');\"><img title=\"Copy\"
 		style=\"vertical-align:top;\" alt=\"Copy\" src=\"{$base_url}images/copy.png\"/></a>";
 	}
 
@@ -95,22 +87,24 @@ class Phones_Table extends WP_List_Table {
 	 **************************************************************************/
 	function process_bulk_action() {
 		global $wpdb;
-		$phones = '';
-		if ( is_array( $_GET['phone'] ) && count( $_GET['phone'] ) > 0 ) {
-			$phones = implode( ',', $_GET['phone'] );
-		} elseif ( is_numeric( $_GET['phone'] ) && $_GET['phone'] > 0 ) {
-			$phones = $_GET['phone'];
+		$shortcodes = '';
+
+		if ( is_array( $_GET['shortcode'] ) && count( $_GET['shortcode'] ) > 0 ) {
+			$shortcodes = implode( ',', $_GET['shortcode'] );
+		} elseif ( is_numeric( $_GET['shortcode'] ) && $_GET['shortcode'] > 0 ) {
+			$shortcodes = $_GET['shortcode'];
 		}
 
 		$currentAction = trim( $this->current_action() );
-		if ( trim( $phones ) != '' ) {
-			$phones = '(' . $phones . ')';
+
+		if ( trim( $shortcodes ) != '' ) {
+			$shortcodes = '(' . $shortcodes . ')';
 			if ( 'delete' == $currentAction ) {
-				$wpdb->query( "DELETE FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " WHERE p_id in " . $phones );
+				$wpdb->query( "DELETE FROM " . PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES . " WHERE s_id in " . $shortcodes );
 			} elseif ( 'inactivate' == $currentAction ) {
-				$wpdb->query( "update " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " set status = 0 WHERE p_id in " . $phones );
+				$wpdb->query( "update " . PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES . " set status = 0 WHERE s_id in " . $shortcodes );
 			} elseif ( 'activate' == $currentAction ) {
-				$wpdb->query( "update " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " set status = 1 WHERE p_id in " . $phones );
+				$wpdb->query( "update " . PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES . " set status = 1 WHERE s_id in " . $shortcodes );
 			}
 		}
 	}
@@ -132,7 +126,7 @@ class Phones_Table extends WP_List_Table {
 			/*$1%s*/
 			$this->_args['singular'],
 			/*$2%s*/
-			$item['p_id']
+			$item['s_id']
 		);
 	}
 
@@ -152,10 +146,9 @@ class Phones_Table extends WP_List_Table {
 	function get_columns() {
 		$columns = array(
 			'cb'     => '<input type="checkbox" />', //Render a checkbox instead of text
-			'name'   => 'Name/Source',
-			'phn_no' => 'Phone Number',
-			'src'    => 'Parameter',
-			'shortcode_name'    => 'Shortcode'
+			'name'   => 'Name',
+			'default_number' => 'Default Phone Number',
+			'shortcode'    => 'Shortcode'
 		);
 
 		return $columns;
@@ -163,18 +156,17 @@ class Phones_Table extends WP_List_Table {
 
 	function get_views() {
 		global $wpdb;
-		$query    = "SELECT a.*, b.name as shortcode_name FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " as a LEFT JOIN " .
-          PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES . " as b ON a.shortcode = b.s_id";
+		$query    = "SELECT a.* FROM " . PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES . " as a";
 		$all      = $wpdb->query( $query );
-		$active   = $wpdb->query( $query . ' where a.status = 1' );
-		$inactive = $wpdb->query( $query . ' where a.status = 0' );
+		$active   = $wpdb->query( $query . ' where status = 1' );
+		$inactive = $wpdb->query( $query . ' where status = 0' );
 
 		${$_GET['post_status'] . 'cnt'} = ' class="current"';
 
 		$toRet = array(
-			'all'      => '<a href="?page=persistent-call-tracking&post_status=all"' . $allcnt . '>All <span class="count">(' . $all . ')</span></a>',
-			'active'   => '<a href="?page=persistent-call-tracking"' . $cnt . '>Active <span class="count">(' . $active . ')</span></a>',
-			'inactive' => '<a href="?page=persistent-call-tracking&post_status=inactive"' . $inactivecnt . '>Inactive <span class="count">(' . $inactive . ')</span></a>'
+			'all'      => '<a href="?page=persistent-call-tracking-shortcodes&post_status=all"' . $allcnt . '>All <span class="count">(' . $all . ')</span></a>',
+			'active'   => '<a href="?page=persistent-call-tracking-shortcodes"' . $cnt . '>Active <span class="count">(' . $active . ')</span></a>',
+			'inactive' => '<a href="?page=persistent-call-tracking-shortcodes&post_status=inactive"' . $inactivecnt . '>Inactive <span class="count">(' . $inactive . ')</span></a>'
 		);
 
 		return $toRet;
@@ -221,24 +213,26 @@ class Phones_Table extends WP_List_Table {
 		$screen = get_current_screen();
 
 		/* -- Preparing your query -- */
-        $query    = "SELECT a.*, b.shortcode as shortcode_name FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " as a LEFT JOIN " .
-            PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES . " as b ON a.shortcode = b.s_id";
+		$query = "SELECT * FROM " . PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES;
 		if ( $_GET['post_status'] == 'inactive' ) {
-			$query .= ' where a.status = 0';
+			$query .= ' where status = 0';
 		} elseif ( $_GET['post_status'] == 'all' ) {
 			$query .= ' where 1';
 		} else {
-			$query .= ' where a.status = 1';
+			$query .= ' where status = 1';
 		}
 		/* -- Ordering parameters -- */
 		//Parameters that are going to be used to order the result
 		$orderby = ! empty( $_GET["orderby"] ) ? mysql_real_escape_string( $_GET["orderby"] ) : 'name';
 		$order   = ! empty( $_GET["order"] ) ? mysql_real_escape_string( $_GET["order"] ) : 'desc';
+
 		if ( ! empty( $orderby ) & ! empty( $order ) ) {
 			$query .= ' ORDER BY ' . $orderby . ' ' . $order;
 		}
+
 		/* -- Pagination parameters -- */
 		$per_page = 20;
+
 		//Number of elements in your table?
 		$totalitems = $wpdb->query( $query ); //return the total number of affected rows
 		$totalpages = ceil( $totalitems / $per_page );

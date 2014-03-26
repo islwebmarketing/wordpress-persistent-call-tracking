@@ -8,7 +8,7 @@ class persistent_call_tracking_install {
 		$sql = "CREATE TABLE IF NOT EXISTS " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " (
 				p_id INT NOT NULL AUTO_INCREMENT,
 				phn_no VARCHAR(255) NOT NULL,
-				shortcode INT DEFAULT 0 NOT NULL,
+				shortcode INT DEFAULT 1 NOT NULL,
 				name VARCHAR(255) NOT NULL,
 				status TINYINT NOT NULL,
 				created DATETIME NOT NULL,
@@ -21,7 +21,8 @@ class persistent_call_tracking_install {
 				s_id INT NOT NULL AUTO_INCREMENT,
 				name VARCHAR(255) NOT NULL,
 				shortcode VARCHAR(255) NOT NULL,
-				default VARCHAR(255) NOT NULL,
+				default_number VARCHAR(255) NOT NULL,
+				status TINYINT NOT NULL,
 				created DATETIME NOT NULL,
 				UNIQUE KEY s_id (s_id)
 			);";
@@ -34,10 +35,11 @@ class persistent_call_tracking_install {
 	function admin_menu() {
 		add_menu_page( 'Call Tracker', 'Call Tracker', 'manage_options', 'persistent-call-tracking', 'persistent_call_tracking_phone_numbers', PLUGIN_BASE_URL . 'images/phone_grey.png', 36 );
 
-      add_submenu_page( 'persistent-call-tracking', 'Phone Numbers', 'Phone Numbers', 'manage_options', 'persistent-call-tracking', 'persistent_call_tracking_phone_numbers' );
-      add_submenu_page( 'persistent-call-tracking', 'Shortcodes', 'Shortcodes', 'manage_options', 'persistent-call-tracking-shortcodes', 'persistent_call_tracking_shortcodes' );
-      add_submenu_page( 'persistent-call-tracking', 'Add New', 'Add New', 'manage_options', 'add-phone-number', 'persistent_call_tracking_add_phone' );
-		add_submenu_page( 'persistent-call-tracking', 'Settings', 'Settings', 'manage_options', 'persistent-call-tracking-settings', 'persistent_call_tracking_settings' );
+        add_submenu_page( 'persistent-call-tracking', 'Phone Numbers', 'Phone Numbers', 'manage_options', 'persistent-call-tracking', 'persistent_call_tracking_phone_numbers' );
+        add_submenu_page( 'persistent-call-tracking', 'Add Number', 'Add Number', 'manage_options', 'add-phone-number', 'persistent_call_tracking_add_phone' );
+        add_submenu_page( 'persistent-call-tracking', 'Shortcodes', 'Shortcodes', 'manage_options', 'persistent-call-tracking-shortcodes', 'persistent_call_tracking_shortcodes' );
+        add_submenu_page( 'persistent-call-tracking', 'Add Shortcode', 'Add Shortcode', 'manage_options', 'add-shortcode', 'persistent_call_tracking_add_shortcode' );
+        add_submenu_page( 'persistent-call-tracking', 'Settings', 'Settings', 'manage_options', 'persistent-call-tracking-settings', 'persistent_call_tracking_settings' );
 	}
 }
 

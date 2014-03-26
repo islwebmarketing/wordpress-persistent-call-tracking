@@ -29,6 +29,31 @@ class Update {
 			$wpdb->query( "ALTER TABLE " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " ADD shortcode INT DEFAULT 0 NOT NULL" );
 		}
 
+
+        $default_number = get_option( 'ak_track_default' );
+
+        if ( empty( $default_number ) ) {
+            $default_number = get_option( 'persistent_call_tracking_default' );
+
+            delete_option( 'persistent_call_tracking_default' );
+        }
+
+        if ( ! empty( $default_number ) ) {
+            $table = PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES;
+
+            // add value to new record array
+            $new_record = array(
+              'name'   => 'Default',
+              'default_number' => $default_number,
+              'shortcode' => 'trackable_number',
+              'created' => date( 'Y-m-d H:i:s' ),
+              'status' => 1
+            );
+
+            //save the post
+            $wpdb->insert( $table, $new_record );
+        }
+
 		// Update the version
 		update_option(WORDPRESS_PERSISTENT_CALL_TRACKING_VERSION_KEY, WORDPRESS_PERSISTENT_CALL_TRACKING_VERSION_NUM);
 

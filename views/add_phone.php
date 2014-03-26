@@ -10,17 +10,14 @@
 			frm.phn_no.focus();
 			return false;
 		}
-		else if (frm.shortcode.value == '') {
-			alert('Please enter a Shortcode.');
+		else if (frm.shortcode.value == '' || frm.shortcode.value == '-1') {
+			alert('Please select a Shortcode.');
 			frm.phn_no.focus();
 			return false;
 		}
 	}
 	function copyToClipboard(text) {
 		window.prompt("Press Ctrl+C to copy", text);
-	}
-	function stripCharacters(element) {
-		element.value = element.value.replace(/\W/g, '');
 	}
 </script>
 <div id="form_container" class="wrap">
@@ -58,15 +55,30 @@
 				<td><input id="phn_no" name="phn_no" class="element text medium regular-text" type="text"
 				           maxlength="200" size="60" value="<?php echo trim( $data['phn_no'] ) ?>"/></td>
 			</tr>
+            <tr valign="top">
+              <th scope="row"><label class="description" for="shortcode">Shortcode: </label></th>
+              <td>
+                <select name="shortcode" id="shortcode">
+                <option value="-1">Select a shortcode...</option>
+                <?php
+                global $wpdb;
+
+                $sql  = "SELECT DISTINCT shortcode, s_id FROM " . PERSISTENT_CALL_TRACKING_TABLE_SHORTCODES;
+
+                $shortcodes = $wpdb->get_results( $sql, ARRAY_A );
+
+                foreach ( $shortcodes as $shortcode ) {
+                    $selected = $data['shortcode'] == $shortcode['s_id'] ? " selected='selected'" : "";
+
+                    echo "<option value='{$shortcode['s_id']}'{$selected}>{$shortcode['shortcode']}</option>";
+                }
+
+                ?>
+                </select>
+                </td>
+            </tr>
 			<?php if ( $data['p_id'] > 0 ) {
 				$twillo_url = '?src=' . $data['p_id']?>
-				<tr valign="top">
-					<th scope="row"><label class="description">Shortcode: </label></th>
-					<td><?php echo "[{$data['shortcode']}]" ?> <a href="#" onclick="copyToClipboard('<?php echo "[{$data['shortcode']}]"; ?>');">
-							<img title="Copy" style="vertical-align:top;" alt="Copy" src="<?php echo PLUGIN_BASE_URL ?>images/copy.png"/>
-						</a>
-					</td>
-				</tr>
 				<tr valign="top">
 					<th scope="row"><label class="description">Parameter: </label></th>
 					<td><?php echo $twillo_url ?> <a href="#" onclick="copyToClipboard('<?php echo $twillo_url ?>');">
@@ -75,16 +87,8 @@
 					</td>
 				</tr>
 			<?php
-			} else { ?>
-				<tr valign="top">
-					<th scope="row"><label class="description" for="shortcode">Shortcode: </label></th>
-					<td><input id="shortcode" name="shortcode" class="element text medium regular-text" type="text"
-					           maxlength="200" size="60" value="trackable_number" onblur="stripCharacters(this)"/>
-						<br />Shortcode names should be all lowercase and use all letters, but numbers and underscores
-						should work fine too.</td>
-				</tr>
-				<tr><td></td><td></td></tr>
-			<?php } ?></tbody>
+			} ?>
+            </tbody>
 		</table>
 		<input type="hidden" name="p_id" id="p_id" value="<?php echo $data['p_id'] ?>"/>
 
