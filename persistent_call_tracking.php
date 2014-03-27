@@ -3,7 +3,7 @@
 Plugin Name: Persistent Call Tracking
 Plugin URI: http://www.isl.ca/en/home/plugins/wordpress-call-tracking.aspx
 Description: This plugin is used to persist phone numbers based on a source value in the query string.
-Version: 1.1.0
+Version: 1.1.1
 Author: ISL
 Author URI: http://www.isl.ca
 License: GPLv3
