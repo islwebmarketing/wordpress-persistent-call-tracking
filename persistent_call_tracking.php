@@ -29,7 +29,7 @@ function persistent_call_tracking_thecookie() {
 		$sql  = "SELECT * FROM " . PERSISTENT_CALL_TRACKING_TABLE_PHONES . " where p_id = " . $getSrc . " and status = 1";
 		$data = $wpdb->get_row( $sql, ARRAY_A );
 		if ( $data['p_id'] > 0 ) {
-			setcookie( "trackable_src", $data['p_id'], time() + ( 3600 * 24 * $cookie_expiry ) );
+			setcookie( "trackable_src", $data['p_id'], time() + ( 3600 * 24 * $cookie_expiry ), "/" );
 		}
 	}
 }
